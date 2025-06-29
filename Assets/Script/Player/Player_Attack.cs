@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Player_Attack : NewMonobehavior
 {
+    
     public void Init()
     {
         //controlAttack.OnAttackTriggered += HandleAttack;

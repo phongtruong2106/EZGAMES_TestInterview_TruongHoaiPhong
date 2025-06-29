@@ -10,6 +10,8 @@ public class PlayerControllerr : NewMonobehavior
     public SwipeDetector _swipeDetector => swipeDetector;
     [SerializeField] protected Player_Attack player_Attack;
     public Player_Attack _player_Attack => player_Attack;
+    [SerializeField] protected Animation anim;
+    public Animation _anim => anim;
 
     protected override void LoadComponents()
     {
@@ -17,8 +19,14 @@ public class PlayerControllerr : NewMonobehavior
         this.LoadObjMovement();
         this.LoadSwipeController();
         this.LoadPlayerAttack();
+        this.LoadAnimation();
     }
 
+    private void LoadAnimation()
+    {
+        if (this.anim != null) return;
+        this.anim = gameObject.GetComponentInChildren<Animation>(); 
+    }
     private void LoadPlayerAttack()
     {
         if (this.player_Attack != null) return;
