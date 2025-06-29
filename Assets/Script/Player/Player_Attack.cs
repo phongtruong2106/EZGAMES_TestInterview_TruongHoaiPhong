@@ -6,4 +6,9 @@ public class Player_Attack : MonoBehaviour
     {
         //controlAttack.OnAttackTriggered += HandleAttack;
     }
+
+     private void HandleAttack()
+    {
+      
+    }
 }
