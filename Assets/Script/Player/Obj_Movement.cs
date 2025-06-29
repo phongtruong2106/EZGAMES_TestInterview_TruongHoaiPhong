@@ -65,6 +65,10 @@ public class Obj_Movement : NewMonobehavior
 
         Vector3 moveDirection = GetCameraRelativeDirection(inputDirection);
         targetPosition += moveDirection * moveDistance;
+        playerControllerr._anim.SetFloat("MoveX", inputDirection.x);
+        playerControllerr._anim.SetFloat("MoveY", inputDirection.z);
+
+       StartCoroutine(ResetMoveParams());
     }
     private Vector3 GetCameraRelativeDirection(Vector3 inputDirection)
     {
@@ -80,7 +84,12 @@ public class Obj_Movement : NewMonobehavior
         Vector3 moveDir = inputDirection.z * forward + inputDirection.x * right;
         return moveDir.normalized;
     }
-
+    private IEnumerator ResetMoveParams()
+    {
+        yield return new WaitForSeconds(0.5f);
+        playerControllerr._anim.SetFloat("MoveX", 0f);
+        playerControllerr._anim.SetFloat("MoveY", 0f);
+    }
     private void OnDestroy()
     {
         InputManager.OnSwipe -= HandleSwipe;

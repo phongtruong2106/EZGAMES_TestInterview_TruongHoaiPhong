@@ -685,8 +685,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cab89cff8df7a0c46bc9205270df51dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDistance: 0.2
-  moveSpeed: 3
+  moveDistance: 1
+  moveSpeed: 2
   mainCamera: {fileID: 963194227}
   playerControllerr: {fileID: 1772426664}
 --- !u!4 &642258006
@@ -1588,7 +1588,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 950817063}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0849666, y: 0.9064658, z: -0.21979441, w: -0.35041535}
+  m_LocalRotation: {x: -0.08496661, y: 0.9064658, z: -0.21979441, w: -0.35041532}
   m_LocalPosition: {x: 8.7265625, y: 9.786, z: 7.1577864}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2229,8 +2229,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementScript: {fileID: 634372101}
-  swipeDetector: {fileID: 0}
-  player_Attack: {fileID: 0}
+  swipeDetector: {fileID: 2077917529}
+  player_Attack: {fileID: 2137974107}
+  anim: {fileID: 1823873034316174783}
 --- !u!54 &1772426665
 Rigidbody:
   m_ObjectHideFlags: 0
