@@ -6,4 +6,16 @@ public class Player_Attack : MonoBehaviour
     {
         //controlAttack.OnAttackTriggered += HandleAttack;
     }
+     private void HandleAttack()
+    {
+        // switch (type)
+        // {
+        //     case AttackType.Melee:
+        //         attackMelee?.Execute();
+        //         break;
+        //     case AttackType.Range:
+        //         attackRange?.Execute();
+        //         break;
+        // }
+    }
 }
