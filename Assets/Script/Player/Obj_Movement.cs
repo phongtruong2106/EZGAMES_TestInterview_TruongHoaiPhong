@@ -2,62 +2,40 @@ using System.Collections;
 using UnityEngine;
 
 public class Obj_Movement : NewMonobehavior
-{
+{  
+    private Vector3 targetPosition;
     [SerializeField] private float moveDistance = 1f;
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] protected PlayerControllerr playerControllerr;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] protected PlayerControllerr playerControllerr;
+    protected override void Start()
+    {
+        base.Start();
 
-
-    private Vector3 targetPosition;
+        mainCamera = Camera.main;
+        targetPosition = transform.position;
+        InputManager.OnSwipe += HandleSwipe;
+    }
+    private void Update()
+    {
+        transform.parent.position = Vector3.MoveTowards(transform.parent.position, targetPosition, moveSpeed * Time.deltaTime);
+    }
     protected override void LoadComponents()
     {
         base.LoadComponents();
         this.LoadPlayerController();
-    }
-
-    protected override void Start()
-    {
-        mainCamera = Camera.main;
-        targetPosition = transform.position;
-        SwipeDetector.SwipeEvent += HandleSwipe;
-    }
-
-    private void OnDestroy()
-    {
-        SwipeDetector.SwipeEvent -= HandleSwipe;
-    }
-
-    private void Update()
-    {
-        transform.parent.position = Vector3.MoveTowards(transform.parent.position, targetPosition, moveSpeed * Time.deltaTime);
     }
     private void LoadPlayerController()
     {
         if (this.playerControllerr != null) return;
         this.playerControllerr = gameObject.GetComponentInParent<PlayerControllerr>();
     }
-
-    private Vector3 GetCameraRelativeDirection(Vector3 inputDirection)
+    private void HandleSwipe(SwipeDirection dir)
     {
-        Vector3 forward = mainCamera.transform.forward;
-        Vector3 right = mainCamera.transform.right;
-
-        forward.y = 0;
-        right.y = 0;
-
-        forward.Normalize();
-        right.Normalize();
-
-        Vector3 moveDir = inputDirection.z * forward + inputDirection.x * right;
-        return moveDir.normalized;
-    }
-
-    private void HandleSwipe(SwipeDirection direction)
-    {
+        Debug.Log("Move to direction: " + dir);
         Vector3 inputDirection = Vector3.zero;
 
-        switch (direction)
+        switch (dir)
         {
             case SwipeDirection.Left:
                 inputDirection = Vector3.left;
@@ -88,7 +66,26 @@ public class Obj_Movement : NewMonobehavior
         Vector3 moveDirection = GetCameraRelativeDirection(inputDirection);
         targetPosition += moveDirection * moveDistance;
     }
+    private Vector3 GetCameraRelativeDirection(Vector3 inputDirection)
+    {
+        Vector3 forward = mainCamera.transform.forward;
+        Vector3 right = mainCamera.transform.right;
 
+        forward.y = 0;
+        right.y = 0;
 
+        forward.Normalize();
+        right.Normalize();
+
+        Vector3 moveDir = inputDirection.z * forward + inputDirection.x * right;
+        return moveDir.normalized;
+    }
+
+    private void OnDestroy()
+    {
+        InputManager.OnSwipe -= HandleSwipe;
+    }
+
+    
 
 }

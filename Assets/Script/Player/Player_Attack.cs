@@ -1,14 +1,22 @@
 using UnityEngine;
 
-public class Player_Attack : MonoBehaviour
+public class Player_Attack : NewMonobehavior
 {
     public void Init()
     {
         //controlAttack.OnAttackTriggered += HandleAttack;
     }
-
-     private void HandleAttack()
+    protected override void Start()
     {
-      
+        base.Start();
+        InputManager.OnTap += HandleAttack;
+    }
+    private void HandleAttack()
+    {
+        Debug.Log("Player Attack!");
+    }
+    private void OnDestroy()
+    {
+        InputManager.OnTap -= HandleAttack;
     }
 }
