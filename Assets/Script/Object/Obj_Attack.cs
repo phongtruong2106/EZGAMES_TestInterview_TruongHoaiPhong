@@ -12,7 +12,7 @@ public class Obj_Attack : NewMonobehavior
     }
     protected override void Start()
     {
-        playerAttack?.Init();
+       // playerAttack?.Init();
         enemyAttack?.Init();
     }
 }
