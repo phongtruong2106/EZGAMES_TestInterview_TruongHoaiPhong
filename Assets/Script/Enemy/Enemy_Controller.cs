@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy_Controller : NewMonobehavior
 {
@@ -14,6 +15,8 @@ public class Enemy_Controller : NewMonobehavior
     public EnemyHealth _enemyHealth => enemyHealth;
     [SerializeField] protected Enemy_TakeDamage enemy_TakeDamage;
     public Enemy_TakeDamage _enemy_TakeDamage => enemy_TakeDamage;
+    [SerializeField] protected NavMeshAgent agent;
+    public NavMeshAgent _agent => agent;
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -23,8 +26,13 @@ public class Enemy_Controller : NewMonobehavior
         this.LoadAnimator();
         this.LoadEnemyHp();
         this.LoadEnemyTakeDamage();
+        this.LoadNavMeshAgent();
     }
-
+    private void LoadNavMeshAgent()
+    {
+        if (this.agent != null) return;
+        this.agent = GetComponent<NavMeshAgent>();
+    }
     private void LoadEnemyHp()
     {
         if (this.enemyHealth != null) return;

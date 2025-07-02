@@ -14,6 +14,10 @@ public class PlayerControllerr : NewMonobehavior
     public  Obj_LoadBoxHIt _obj_LoadBoxHit => obj_LoadBoxHIt;
     [SerializeField] protected Animator anim;
     public Animator _anim => anim;
+    [SerializeField] protected Rigidbody rb;
+    public Rigidbody _rb => rb;
+    [SerializeField] protected CharacterController characterController;
+    public CharacterController _characterController => characterController;
 
     protected override void LoadComponents()
     {
@@ -23,8 +27,19 @@ public class PlayerControllerr : NewMonobehavior
         this.LoadPlayerAttack();
         this.LoadAnimation();
         this.LoadObjLoadBH();
+        this.LoadRB();
+        this.LoadCC();
     }
-
+    private void LoadRB()
+    {
+        if (this.rb != null) return;
+        this.rb = GetComponent<Rigidbody>();
+    }
+    private void LoadCC()
+    {
+        if (this.characterController != null) return;
+        this.characterController = GetComponent<CharacterController>();
+    }
     private void LoadObjLoadBH()
     {
         if (this.obj_LoadBoxHIt != null) return;
