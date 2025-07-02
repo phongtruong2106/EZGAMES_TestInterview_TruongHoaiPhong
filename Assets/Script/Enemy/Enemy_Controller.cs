@@ -10,6 +10,10 @@ public class Enemy_Controller : NewMonobehavior
     public PlayerControllerr _playerControllerr => playerControllerr;
     [SerializeField] protected Animator animator;
     public Animator _animator => animator;
+    [SerializeField] protected EnemyHealth enemyHealth;
+    public EnemyHealth _enemyHealth => enemyHealth;
+    [SerializeField] protected Enemy_TakeDamage enemy_TakeDamage;
+    public Enemy_TakeDamage _enemy_TakeDamage => enemy_TakeDamage;
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -17,8 +21,15 @@ public class Enemy_Controller : NewMonobehavior
         this.LoadEnemyHurt();
         this.LoadPlayerController();
         this.LoadAnimator();
+        this.LoadEnemyHp();
+        this.LoadEnemyTakeDamage();
     }
 
+    private void LoadEnemyHp()
+    {
+        if (this.enemyHealth != null) return;
+        this.enemyHealth = gameObject.GetComponentInChildren<EnemyHealth>();
+    }
     private void LoadAnimator()
     {
         if (this.animator != null) return;
@@ -38,5 +49,10 @@ public class Enemy_Controller : NewMonobehavior
     {
         if (this.playerControllerr != null) return;
         this.playerControllerr = FindAnyObjectByType<PlayerControllerr>();
+    }
+    private void LoadEnemyTakeDamage()
+    {
+        if (this.enemy_TakeDamage != null) return;
+        this.enemy_TakeDamage = this.gameObject.GetComponentInChildren<Enemy_TakeDamage>();
     }
 }

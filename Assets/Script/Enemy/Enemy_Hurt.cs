@@ -25,7 +25,10 @@ public class Enemy_Hurt : NewMonobehavior
         this.timer = hurtResetTime;
         UpdateAnimation(type);
     }
-
+    public void SetTakeDamage(int takeDame)
+    {
+        this.enemy_Controller._enemy_TakeDamage.TakeDamage(takeDame);
+    }
     private void UpdateAnimation(AttackType type)
     {
         ResetAllBools();
@@ -63,6 +66,8 @@ public class Enemy_Hurt : NewMonobehavior
             }
         }
     }
+
+    
 }
 
     
