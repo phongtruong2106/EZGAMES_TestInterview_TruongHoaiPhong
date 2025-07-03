@@ -3,6 +3,12 @@ using UnityEngine;
 public class Enemy_TakeDamage : NewMonobehavior, IDamageable
 {
     [SerializeField] protected Enemy_Controller enemy_Controller;
+    public bool isDie;
+
+    protected override void Start()
+    {
+        this.isDie = false;
+    }
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -25,6 +31,7 @@ public class Enemy_TakeDamage : NewMonobehavior, IDamageable
 
     private void Die()
     {
+        this.isDie = true;
         this.enemy_Controller._anim.SetBool("KnockOut", true);
         enemy_Controller._agent.isStopped = true;
     }

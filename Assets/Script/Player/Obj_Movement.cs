@@ -9,7 +9,7 @@ public class Obj_Movement : NewMonobehavior
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private Camera mainCamera;
     [SerializeField] protected PlayerControllerr playerControllerr;
-    public bool isDontMove;
+
 
     protected override void Start()
     {
@@ -25,21 +25,25 @@ public class Obj_Movement : NewMonobehavior
     }
     private void Move()
     {
-        if (playerControllerr._characterController == null) return;
-
-        Vector3 currentPosition = playerControllerr._characterController.transform.position;
-        Vector3 direction = targetPosition - currentPosition;
-        direction.y = 0;
-
-        Vector3 move = Vector3.zero;
-
-        if (direction.magnitude > 0.05f)
+        if (!this.playerControllerr._player_TakeDamage.isDie)
         {
-            move = direction.normalized * moveSpeed * Time.fixedDeltaTime;
-        }
-        move.y += Physics.gravity.y * Time.fixedDeltaTime;
+            if (playerControllerr._characterController == null) return;
 
-        playerControllerr._characterController.Move(move);
+            Vector3 currentPosition = playerControllerr._characterController.transform.position;
+            Vector3 direction = targetPosition - currentPosition;
+            direction.y = 0;
+
+            Vector3 move = Vector3.zero;
+
+            if (direction.magnitude > 0.05f)
+            {
+                move = direction.normalized * moveSpeed * Time.fixedDeltaTime;
+            }
+            move.y += Physics.gravity.y * Time.fixedDeltaTime;
+
+            playerControllerr._characterController.Move(move);
+        }
+        
     }
     protected override void LoadComponents()
     {
@@ -55,28 +59,32 @@ public class Obj_Movement : NewMonobehavior
 
     private void HandleSwipe(SwipeDirection dir)
     {
-        Debug.Log("Move to direction: " + dir);
-        Vector3 inputDirection = Vector3.zero;
-
-        switch (dir)
+        if (!this.playerControllerr._player_TakeDamage.isDie)
         {
-            case SwipeDirection.Left:       inputDirection = Vector3.left; break;
-            case SwipeDirection.Right:      inputDirection = Vector3.right; break;
-            case SwipeDirection.Up:         inputDirection = Vector3.forward; break;
-            case SwipeDirection.Down:       inputDirection = Vector3.back; break;
-            case SwipeDirection.UpLeft:     inputDirection = new Vector3(-1, 0, 1); break;
-            case SwipeDirection.UpRight:    inputDirection = new Vector3(1, 0, 1); break;
-            case SwipeDirection.DownLeft:   inputDirection = new Vector3(-1, 0, -1); break;
-            case SwipeDirection.DownRight:  inputDirection = new Vector3(1, 0, -1); break;
+            Debug.Log("Move to direction: " + dir);
+            Vector3 inputDirection = Vector3.zero;
+
+            switch (dir)
+            {
+                case SwipeDirection.Left:       inputDirection = Vector3.left; break;
+                case SwipeDirection.Right:      inputDirection = Vector3.right; break;
+                case SwipeDirection.Up:         inputDirection = Vector3.forward; break;
+                case SwipeDirection.Down:       inputDirection = Vector3.back; break;
+                case SwipeDirection.UpLeft:     inputDirection = new Vector3(-1, 0, 1); break;
+                case SwipeDirection.UpRight:    inputDirection = new Vector3(1, 0, 1); break;
+                case SwipeDirection.DownLeft:   inputDirection = new Vector3(-1, 0, -1); break;
+                case SwipeDirection.DownRight:  inputDirection = new Vector3(1, 0, -1); break;
+            }
+
+            Vector3 moveDirection = GetCameraRelativeDirection(inputDirection);
+            targetPosition += moveDirection * moveDistance;
+
+            playerControllerr._anim.SetFloat("MoveX", inputDirection.x);
+            playerControllerr._anim.SetFloat("MoveY", inputDirection.z);
+
+            StartCoroutine(ResetMoveParams());
         }
-
-        Vector3 moveDirection = GetCameraRelativeDirection(inputDirection);
-        targetPosition += moveDirection * moveDistance;
-
-        playerControllerr._anim.SetFloat("MoveX", inputDirection.x);
-        playerControllerr._anim.SetFloat("MoveY", inputDirection.z);
-
-        StartCoroutine(ResetMoveParams());
+        
     }
 
     private Vector3 GetCameraRelativeDirection(Vector3 inputDirection)
