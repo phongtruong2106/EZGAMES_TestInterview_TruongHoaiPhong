@@ -10,13 +10,19 @@ public class Enemy_Controller : NewMonobehavior
     [SerializeField] protected PlayerControllerr playerControllerr;
     public PlayerControllerr _playerControllerr => playerControllerr;
     [SerializeField] protected Animator animator;
-    public Animator _animator => animator;
+    public Animator _anim => animator;
     [SerializeField] protected EnemyHealth enemyHealth;
     public EnemyHealth _enemyHealth => enemyHealth;
     [SerializeField] protected Enemy_TakeDamage enemy_TakeDamage;
     public Enemy_TakeDamage _enemy_TakeDamage => enemy_TakeDamage;
     [SerializeField] protected NavMeshAgent agent;
     public NavMeshAgent _agent => agent;
+    [SerializeField] protected EnemyMovement enemyMovement;
+    public EnemyMovement _enemyMovement => enemyMovement;
+    [SerializeField] protected Enemy_LoadBoxHIt enemy_LoadBoxHIt;
+    public Enemy_LoadBoxHIt _enemyLoadBoxHit => enemy_LoadBoxHIt;
+    public bool isAttacking { get; set; } = false;
+
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -27,7 +33,20 @@ public class Enemy_Controller : NewMonobehavior
         this.LoadEnemyHp();
         this.LoadEnemyTakeDamage();
         this.LoadNavMeshAgent();
+        this.LoadEnemyMovement();
+        this.LoadEnemyLoadBoxHit();
     }
+    private void LoadEnemyLoadBoxHit()
+    {
+        if (this.enemy_LoadBoxHIt != null) return;
+        this.enemy_LoadBoxHIt = gameObject.GetComponentInChildren<Enemy_LoadBoxHIt>();
+    }
+    private void LoadEnemyMovement()
+    {
+        if (this.enemyMovement != null) return;
+        this.enemyMovement = this.gameObject.GetComponentInChildren<EnemyMovement>();
+    }
+
     private void LoadNavMeshAgent()
     {
         if (this.agent != null) return;
@@ -63,4 +82,8 @@ public class Enemy_Controller : NewMonobehavior
         if (this.enemy_TakeDamage != null) return;
         this.enemy_TakeDamage = this.gameObject.GetComponentInChildren<Enemy_TakeDamage>();
     }
+    public void ResetAttackState()
+{
+    isAttacking = false;
+}
 }

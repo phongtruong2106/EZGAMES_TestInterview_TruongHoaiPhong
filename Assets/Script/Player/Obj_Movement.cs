@@ -9,6 +9,7 @@ public class Obj_Movement : NewMonobehavior
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private Camera mainCamera;
     [SerializeField] protected PlayerControllerr playerControllerr;
+    public bool isDontMove;
 
     protected override void Start()
     {
@@ -19,6 +20,10 @@ public class Obj_Movement : NewMonobehavior
     }
 
     private void FixedUpdate()
+    {
+        this.Move();
+    }
+    private void Move()
     {
         if (playerControllerr._characterController == null) return;
 
@@ -36,7 +41,6 @@ public class Obj_Movement : NewMonobehavior
 
         playerControllerr._characterController.Move(move);
     }
-
     protected override void LoadComponents()
     {
         base.LoadComponents();

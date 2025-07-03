@@ -8,7 +8,7 @@ public class Player_Attack : NewMonobehavior
     private float lastClickedTime = 0f;
     private float maxComboDelay = 1f;
 
-    private void Start()
+    protected override void Start()
     {
         InputManager.OnTap += HandleAttack;
     }
@@ -25,8 +25,6 @@ public class Player_Attack : NewMonobehavior
         {
             noOfClicks = 0;
         }
-
-        // Reset animation sau khi đã đủ thời gian
         if (stateInfo.IsName("Attack1") && stateInfo.normalizedTime > 0.7f)
         {
             playerControllerr._anim.SetBool("Attack1", false);

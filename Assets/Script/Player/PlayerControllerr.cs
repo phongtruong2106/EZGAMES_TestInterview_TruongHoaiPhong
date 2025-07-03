@@ -10,14 +10,18 @@ public class PlayerControllerr : NewMonobehavior
     public SwipeDetector _swipeDetector => swipeDetector;
     [SerializeField] protected Player_Attack player_Attack;
     public Player_Attack _player_Attack => player_Attack;
-    [SerializeField] protected Obj_LoadBoxHIt obj_LoadBoxHIt;
-    public  Obj_LoadBoxHIt _obj_LoadBoxHit => obj_LoadBoxHIt;
+    [SerializeField] protected Player_LoadBoxHit obj_LoadBoxHIt;
+    public  Player_LoadBoxHit _obj_LoadBoxHit => obj_LoadBoxHIt;
+    [SerializeField] protected Player_HP player_HP;
+    public Player_HP _player_HP => player_HP;
     [SerializeField] protected Animator anim;
     public Animator _anim => anim;
     [SerializeField] protected Rigidbody rb;
     public Rigidbody _rb => rb;
     [SerializeField] protected CharacterController characterController;
     public CharacterController _characterController => characterController;
+    [SerializeField] protected Player_TakeDamage player_TakeDamage;
+    public Player_TakeDamage _player_TakeDamage => player_TakeDamage;
 
     protected override void LoadComponents()
     {
@@ -29,6 +33,18 @@ public class PlayerControllerr : NewMonobehavior
         this.LoadObjLoadBH();
         this.LoadRB();
         this.LoadCC();
+        this.LoadPlayerHP();
+        this.LoadPlayerTakeDamage();
+    }
+    private void LoadPlayerTakeDamage()
+    {
+        if (this.player_TakeDamage != null) return;
+        this.player_TakeDamage = gameObject.GetComponentInChildren<Player_TakeDamage>();
+    }
+    private void LoadPlayerHP()
+    {
+        if (this.player_HP != null) return;
+        this.player_HP = gameObject.GetComponentInChildren<Player_HP>();
     }
     private void LoadRB()
     {
@@ -43,7 +59,7 @@ public class PlayerControllerr : NewMonobehavior
     private void LoadObjLoadBH()
     {
         if (this.obj_LoadBoxHIt != null) return;
-        this.obj_LoadBoxHIt = this.gameObject.GetComponentInChildren<Obj_LoadBoxHIt>();
+        this.obj_LoadBoxHIt = this.gameObject.GetComponentInChildren<Player_LoadBoxHit>();
     }
     private void LoadAnimation()
     {

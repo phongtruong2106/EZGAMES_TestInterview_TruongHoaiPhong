@@ -25,6 +25,7 @@ public class Enemy_TakeDamage : NewMonobehavior, IDamageable
 
     private void Die()
     {
-        this.enemy_Controller._animator.SetBool("KnockOut", true);
+        this.enemy_Controller._anim.SetBool("KnockOut", true);
+        enemy_Controller._agent.isStopped = true;
     }
 }

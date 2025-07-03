@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class Enemy_Hurt : NewMonobehavior
+public class PlayerHurt : NewMonobehavior
 {
-    [SerializeField] protected Enemy_Controller enemy_Controller;
+    [SerializeField] protected PlayerControllerr playerControllerr;
     private AttackType lastHitType = AttackType.None;
     private float hurtResetTime = 0.5f;
     private float timer = 0f;
@@ -10,13 +10,13 @@ public class Enemy_Hurt : NewMonobehavior
     protected override void LoadComponents()
     {
         base.LoadComponents();
-        this.LoadEnemyController();
+        this.LoadPlayerController();
     }
 
-    private void LoadEnemyController()
+    private void LoadPlayerController()
     {
-        if (this.enemy_Controller != null) return;
-        this.enemy_Controller = this.GetComponentInParent<Enemy_Controller>();
+        if (this.playerControllerr != null) return;
+        this.playerControllerr = gameObject.GetComponentInParent<PlayerControllerr>();
     }
 
     public void SetLastHitType(AttackType type)
@@ -27,7 +27,7 @@ public class Enemy_Hurt : NewMonobehavior
     }
     public void SetTakeDamage(int takeDame)
     {
-        this.enemy_Controller._enemy_TakeDamage.TakeDamage(takeDame);
+         this.playerControllerr._player_TakeDamage.TakeDamage(takeDame);
     }
     private void UpdateAnimation(AttackType type)
     {
@@ -36,22 +36,22 @@ public class Enemy_Hurt : NewMonobehavior
         switch (type)
         {
             case AttackType.Head:
-                enemy_Controller._anim.SetBool("HeahHit", true);
+                playerControllerr._anim.SetBool("hit2", true);
                 break;
             case AttackType.Stomach:
-                enemy_Controller._anim.SetBool("StomachHit", true);
+                playerControllerr._anim.SetBool("hit3", true);
                 break;
             case AttackType.KidneyL:
-                enemy_Controller._anim.SetBool("KidneyHit", true);
+                playerControllerr._anim.SetBool("hit1", true);
                 break;
         }
     }
 
     private void ResetAllBools()
     {
-        enemy_Controller._anim.SetBool("HeahHit", false);
-        enemy_Controller._anim.SetBool("StomachHit", false);
-        enemy_Controller._anim.SetBool("KidneyHit", false);
+        playerControllerr._anim.SetBool("hit1", false);
+        playerControllerr._anim.SetBool("hit2", false);
+        playerControllerr._anim.SetBool("hit3", false);
     }
 
     private void Update()
@@ -66,8 +66,4 @@ public class Enemy_Hurt : NewMonobehavior
             }
         }
     }
-
-    
 }
-
-    
