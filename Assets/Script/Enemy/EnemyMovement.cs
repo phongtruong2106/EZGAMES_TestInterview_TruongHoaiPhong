@@ -1,67 +1,68 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-public class EnemyMovement : NewMonobehavior
+public class EnemyMovement : NewMonobehavior, IMovable
 {
     [SerializeField] protected Enemy_Controller enemy_Controller;
     [SerializeField] private float decisionInterval = 1.2f;
-    [SerializeField] private float stopDistance = 1.5f;  
+    [SerializeField] private float stopDistance = 1.5f;
     private float decisionTimer;
-
+    private float targetSearchTimer;
+    private float targetSearchInterval = 2f;
     private Vector3 offsetDir = Vector3.zero;
 
     protected override void LoadComponents()
     {
         base.LoadComponents();
-        this.LoadEnemyController();
+        LoadEnemyController();
     }
 
     private void LoadEnemyController()
     {
-        if (this.enemy_Controller != null) return;
-        this.enemy_Controller = gameObject.GetComponentInParent<Enemy_Controller>();
+        if (enemy_Controller != null) return;
+        enemy_Controller = GetComponentInParent<Enemy_Controller>();
     }
 
     protected override void Start()
     {
-        this.enemy_Controller._agent.updateRotation = false;
-        decisionTimer = decisionInterval;
+        enemy_Controller._agent.updateRotation = false;
+        decisionTimer = Random.Range(0f, decisionInterval);
+        MovementManager.Instance?.Register(this);
+
+        enemy_Controller._targetHandler.OnTargetFound += OnTargetAcquired;
     }
 
-    private void Update()
+    private void OnDestroy()
     {
-        decisionTimer -= Time.deltaTime;
+        if (MovementManager.Instance != null)
+            MovementManager.Instance.Unregister(this);
 
-        if (decisionTimer <= 0f)
-        {
-            PickRandomOffset();
-            decisionTimer = decisionInterval;
-        }
-
-        MoveWithCondition();
-        RotateTowardMoveDirection();
-        UpdateAnimatorMoveParams();
+        if (enemy_Controller._targetHandler != null)
+            enemy_Controller._targetHandler.OnTargetFound -= OnTargetAcquired;
     }
 
     private void PickRandomOffset()
     {
         int rand = Random.Range(0, 3);
-
-        if (rand == 0)
-            offsetDir = Vector3.zero;
-        else if (rand == 1)
-            offsetDir = -enemy_Controller.transform.right * 1f;
-        else
-            offsetDir = enemy_Controller.transform.right * 1f;
+        offsetDir = rand switch
+        {
+            0 => Vector3.zero,
+            1 => -enemy_Controller.transform.right * 1f,
+            _ => enemy_Controller.transform.right * 1f
+        };
     }
 
     private void MoveWithCondition()
     {
-        Vector3 playerPos = enemy_Controller._playerControllerr.transform.position;
-        float distanceToPlayer = Vector3.Distance(enemy_Controller.transform.position, playerPos);
+        var target = enemy_Controller._targetHandler?.GetTarget();
+        if (target == null || !target.IsAlive()) return;
 
-        if (distanceToPlayer > stopDistance)
+        Vector3 targetPos = target.GetTransform().position;
+        float dist = Vector3.Distance(enemy_Controller.transform.position, targetPos);
+
+        if (dist > stopDistance)
         {
-            enemy_Controller._agent.destination = playerPos + offsetDir;
+            enemy_Controller._agent.destination = targetPos + offsetDir;
         }
         else
         {
@@ -71,21 +72,26 @@ public class EnemyMovement : NewMonobehavior
             }
             else
             {
-                if (Random.value < 0.7f)
-                {
-                    offsetDir = Vector3.zero;
-                }
-                else
-                {
-                    PickRandomOffset();
-                }
-                Vector3 target = enemy_Controller.transform.position + offsetDir;
-                enemy_Controller._agent.destination = target;
+                offsetDir = (Random.value < 0.7f) ? Vector3.zero : GetRandomSideOffset();
+                enemy_Controller._agent.destination = enemy_Controller.transform.position + offsetDir;
             }
         }
+
     }
+    private void RotateTowardTarget()
+    {
+        var target = enemy_Controller._targetHandler?.GetTarget();
+        if (target == null || !target.IsAlive()) return;
 
+        Vector3 dir = target.GetTransform().position - enemy_Controller.transform.position;
+        dir.y = 0;
 
+        if (dir.sqrMagnitude > 0.01f)
+        {
+            Quaternion rot = Quaternion.LookRotation(dir);
+            enemy_Controller.transform.rotation = Quaternion.Slerp(enemy_Controller.transform.rotation, rot, Time.deltaTime * 5f);
+        }
+    }
 
     private void UpdateAnimatorMoveParams()
     {
@@ -97,12 +103,11 @@ public class EnemyMovement : NewMonobehavior
         }
 
         Vector3 velocity = enemy_Controller._agent.velocity;
-
-        if (velocity.magnitude > 0.1f)
+        if (velocity.sqrMagnitude > 0.01f)
         {
-            Vector3 localVelocity = enemy_Controller.transform.InverseTransformDirection(velocity);
-            enemy_Controller._anim.SetFloat("MoveX", localVelocity.x, 0.1f, Time.deltaTime);
-            enemy_Controller._anim.SetFloat("MoveY", localVelocity.z, 0.1f, Time.deltaTime);
+            Vector3 local = enemy_Controller.transform.InverseTransformDirection(velocity);
+            enemy_Controller._anim.SetFloat("MoveX", local.x, 0.1f, Time.deltaTime);
+            enemy_Controller._anim.SetFloat("MoveY", local.z, 0.1f, Time.deltaTime);
         }
         else
         {
@@ -111,16 +116,36 @@ public class EnemyMovement : NewMonobehavior
         }
     }
 
-    private void RotateTowardMoveDirection()
+    public void Tick(float deltaTime)
     {
-        Vector3 direction = enemy_Controller._playerControllerr.transform.position - enemy_Controller.transform.position;
-        direction.y = 0;
+        decisionTimer -= deltaTime;
+        targetSearchTimer -= deltaTime;
 
-        if (direction.sqrMagnitude > 0.01f)
+        if (decisionTimer <= 0f)
         {
-            Quaternion targetRot = Quaternion.LookRotation(direction);
-            enemy_Controller.transform.rotation = Quaternion.Slerp(enemy_Controller.transform.rotation, targetRot, Time.deltaTime * 5f);
+            PickRandomOffset();
+            decisionTimer = decisionInterval;
         }
-    }
 
+        if (targetSearchTimer <= 0f)
+        {
+            enemy_Controller._targetHandler?.FindNewTarget();
+            targetSearchTimer = targetSearchInterval;
+        }
+
+        MoveWithCondition();
+        RotateTowardTarget();
+        UpdateAnimatorMoveParams();
+    }
+    private Vector3 GetRandomSideOffset()
+    {
+        int rand = Random.Range(0, 2);
+        return (rand == 0)
+            ? -enemy_Controller.transform.right * 1f
+            : enemy_Controller.transform.right * 1f;
+    }
+    private void OnTargetAcquired(ITargetable target)
+    {
+        Debug.Log($"{gameObject.name} just found target: {target?.GetTransform().name ?? "null"}");
+    }
 }

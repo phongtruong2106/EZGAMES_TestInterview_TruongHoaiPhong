@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MatchResultChecker : NewMonobehavior
@@ -6,7 +7,10 @@ public class MatchResultChecker : NewMonobehavior
     [SerializeField] private PlayerControllerr PC;
     [SerializeField] private Enemy_Controller EC;
     [SerializeField] protected UI_Controller uI_Controller;
-
+    [Header("Enemy")]
+    [SerializeField] protected List<Enemy_Controller> gameObjects;
+    [Header("elly")]
+    [SerializeField] protected List<Enemy_Controller> EllyObj;
 
 
     private bool gameEnded = false;
@@ -37,8 +41,10 @@ public class MatchResultChecker : NewMonobehavior
                 Check1v1();
                 break;
             case GameMode.OneVsMany:
+                Check1v6();
                 break;
             case GameMode.ManyVsMany:
+                Check25vs25();
                 break;
         }
     }
@@ -57,6 +63,94 @@ public class MatchResultChecker : NewMonobehavior
             gameEnded = true;
             this.uI_Controller._uI_ResultGame._anim.SetBool("Victory", true);
             PC._anim.SetBool("Victory", true);
+        }
+    }
+    private void Check1v6()
+    {
+        if (PC._player_TakeDamage.isDie)
+        {
+            gameEnded = true;
+            this.uI_Controller._uI_ResultGame._anim.SetBool("Defeat", true);
+
+            foreach (var enemy in gameObjects)
+            {
+                if (enemy != null && !enemy._enemy_TakeDamage.isDie)
+                {
+                    enemy._anim.SetBool("victory", true);
+                }
+            }
+
+            return;
+        }
+
+        bool allEnemiesDead = true;
+        foreach (var enemy in gameObjects)
+        {
+            if (enemy != null && !enemy._enemy_TakeDamage.isDie)
+            {
+                allEnemiesDead = false;
+                break;
+            }
+        }
+
+        if (allEnemiesDead)
+        {
+            gameEnded = true;
+            this.uI_Controller._uI_ResultGame._anim.SetBool("Victory", true);
+            PC._anim.SetBool("Victory", true);
+        }
+    }
+    private void Check25vs25()
+    {
+        bool allEllyDead = true;
+        foreach (var elly in EllyObj)
+        {
+            if (elly != null && !elly._enemy_TakeDamage.isDie)
+            {
+                allEllyDead = false;
+                break;
+            }
+        }
+
+        if (PC._player_TakeDamage.isDie && allEllyDead)
+        {
+            gameEnded = true;
+            uI_Controller._uI_ResultGame._anim.SetBool("Defeat", true);
+
+            foreach (var enemy in gameObjects)
+            {
+                if (enemy != null && !enemy._enemy_TakeDamage.isDie)
+                {
+                    enemy._anim.SetBool("victory", true);
+                }
+            }
+
+            return;
+        }
+        bool allEnemiesDead = true;
+        foreach (var enemy in gameObjects)
+        {
+            if (enemy != null && !enemy._enemy_TakeDamage.isDie)
+            {
+                allEnemiesDead = false;
+                break;
+            }
+        }
+
+        if (allEnemiesDead)
+        {
+            gameEnded = true;
+            uI_Controller._uI_ResultGame._anim.SetBool("Victory", true);
+
+            PC._anim.SetBool("Victory", true);
+
+            foreach (var elly in EllyObj)
+            {
+                if (elly != null && !elly._enemy_TakeDamage.isDie)
+                {
+                    elly._anim.SetBool("Victory", true);
+                }
+            }
         }
     }
 }

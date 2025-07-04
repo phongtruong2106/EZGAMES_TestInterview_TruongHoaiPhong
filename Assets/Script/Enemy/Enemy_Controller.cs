@@ -22,6 +22,8 @@ public class Enemy_Controller : NewMonobehavior
     [SerializeField] protected Enemy_LoadBoxHIt enemy_LoadBoxHIt;
     public Enemy_LoadBoxHIt _enemyLoadBoxHit => enemy_LoadBoxHIt;
     public bool isAttacking { get; set; } = false;
+    [SerializeField] protected TargetHandler targetHandler;
+    public TargetHandler _targetHandler => targetHandler;
 
     protected override void LoadComponents()
     {
@@ -35,6 +37,12 @@ public class Enemy_Controller : NewMonobehavior
         this.LoadNavMeshAgent();
         this.LoadEnemyMovement();
         this.LoadEnemyLoadBoxHit();
+        this.LoadTargetHandler();
+    }
+    private void LoadTargetHandler()
+    {
+        if (this.targetHandler != null) return;
+        this.targetHandler = GetComponentInChildren<TargetHandler>();
     }
     private void LoadEnemyLoadBoxHit()
     {

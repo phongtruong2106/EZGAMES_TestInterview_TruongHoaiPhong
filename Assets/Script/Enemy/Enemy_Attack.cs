@@ -29,12 +29,15 @@ public class Enemy_Attack : NewMonobehavior
     {
         attackTimer -= Time.deltaTime;
 
-        float distanceToPlayer = Vector3.Distance(
+        var target = enemy_Controller._targetHandler?.GetTarget();
+        if (target == null || !target.IsAlive()) return;
+
+        float distanceToTarget = Vector3.Distance(
             enemy_Controller.transform.position,
-            enemy_Controller._playerControllerr.transform.position
+            target.GetTransform().position
         );
 
-        if (distanceToPlayer <= attackRange && attackTimer <= 0f)
+        if (distanceToTarget <= attackRange && attackTimer <= 0f)
         {
             DoAttack();
             attackTimer = attackCooldown;
